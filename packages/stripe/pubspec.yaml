@@ -26,6 +26,10 @@ dependencies:
     git:
       url: https://github.com/mapacheverdugo/flutter_stripe
       path: packages/stripe_android
+  stripe_ios: 
+    git:
+      url: https://github.com/mapacheverdugo/flutter_stripe
+      path: packages/stripe_ios
   stripe_platform_interface: ^9.3.0
 dev_dependencies:
   flutter_test:
