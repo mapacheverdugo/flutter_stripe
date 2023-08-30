@@ -1,5 +1,6 @@
 package com.reactnativestripesdk
 
+import android.util.Log
 import com.facebook.react.bridge.ReadableMap
 import com.reactnativestripesdk.utils.*
 import com.reactnativestripesdk.utils.mapToBillingDetails
@@ -229,7 +230,27 @@ class PaymentMethodCreateParamsFactory(
         PaymentMethod.Type.AfterpayClearpay,
         PaymentMethod.Type.AuBecsDebit,
         PaymentMethod.Type.Klarna,
-        PaymentMethod.Type.PayPal,
+        PaymentMethod.Type.PayPal -> {
+          val params = createPaymentMethodParams(paymentMethodType)
+
+          Log.d("StripeReactNative", "params: $params")
+
+          return if (isPaymentIntent) {
+            ConfirmPaymentIntentParams
+              .createWithPaymentMethodCreateParams(
+                paymentMethodCreateParams = params,
+                clientSecret = clientSecret,
+                setupFutureUsage = mapToPaymentIntentFutureUsage(getValOr(options, "setupFutureUsage")),
+                mandateData = buildMandateDataParams()
+              )
+          } else {
+            ConfirmSetupIntentParams.create(
+              paymentMethodCreateParams = params,
+              clientSecret = clientSecret,
+              mandateData = buildMandateDataParams()
+            )
+          }
+        }
         PaymentMethod.Type.CashAppPay -> {
           val params = createPaymentMethodParams(paymentMethodType)
 
@@ -399,6 +420,7 @@ class PaymentMethodCreateParamsFactory(
   }
 
   private fun buildMandateDataParams(): MandateDataParams? {
+    Log.d("StripeReactNative", "buildMandateDataParams paymentMethodData: $paymentMethodData")
     getMapOrNull(paymentMethodData, "mandateData")?.let { mandateData ->
       getMapOrNull(mandateData, "customerAcceptance")?.let { customerAcceptance ->
         getMapOrNull(customerAcceptance, "online")?.let { onlineParams ->

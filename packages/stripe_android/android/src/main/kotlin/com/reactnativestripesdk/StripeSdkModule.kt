@@ -504,10 +504,13 @@ class StripeSdkModule(internal val reactContext: ReactApplicationContext) : Reac
       return
     }
 
+    Log.d("StripeReactNative", "confirmSetupIntent params: $params")
+
     val factory = PaymentMethodCreateParamsFactory(getMapOrNull(params, "paymentMethodData"), options, cardFieldView, cardFormView)
 
     try {
       val confirmParams = factory.createParams(setupIntentClientSecret, paymentMethodType, isPaymentIntent = false) as ConfirmSetupIntentParams
+      Log.d("StripeReactNative", "confirmSetupIntent confirmParams: $confirmParams")
       urlScheme?.let {
         confirmParams.returnUrl = mapToReturnURL(urlScheme)
       }
